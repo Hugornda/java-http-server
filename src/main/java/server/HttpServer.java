@@ -15,7 +15,6 @@ public class HttpServer {
 
   ServerSocket serverSocket;
   Socket clientSocket;
-  PrintWriter out;
   BufferedReader in;
 
   int port;
@@ -58,7 +57,7 @@ public class HttpServer {
     String response = "HTTP/1.1 404 Not Found\r\n\r\n";
 
     if ( request.path.equals("/") ) {
-       response = "HTTP/1.1 200 \r\n\r\n";
+       response = "HTTP/1.1 200 OK\r\n\r\n";
     }
     OutputStream outputStream = clientSocket.getOutputStream();
     outputStream.write(response.getBytes());
