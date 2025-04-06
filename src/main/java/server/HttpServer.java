@@ -55,7 +55,7 @@ public class HttpServer {
   }
 
   public void sendMessage(Request request) throws IOException {
-    String response = "HTTP/1.1 404 Not Found \r\n\r\n";
+    String response = "HTTP/1.1 404 Not Found\r\n\r\n";
 
     if ( request.path.equals("/") ) {
        response = "HTTP/1.1 200 \r\n\r\n";
