@@ -1,10 +1,14 @@
 package server;
 
+import java.util.HashMap;
+
 public class Request {
 
-  String method;
+  private final String method;
 
-  String path;
+  private final String path;
+
+  HashMap<String, String> pathVariables = new HashMap<>();
 
   public Request(String method, String path) {
     this.method = method;
@@ -12,11 +16,19 @@ public class Request {
   }
 
   public String getMethod() {
-    return this.method;
+    return method;
   }
 
   public String getPath() {
-    return this.path;
+    return path;
+  }
+
+  public void putPathVariable(String key, String val) {
+    this.pathVariables.put(key, val);
+  }
+
+  public HashMap<String, String> getPathVariables() {
+    return this.pathVariables;
   }
 
 }
