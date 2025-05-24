@@ -35,20 +35,26 @@ public class HttpServer {
 
     while (running) {
       clientSocket = serverSocket.accept();
+      new Thread(this::handleClientRequest).start();
+    }
+  }
+
+  private void handleClientRequest()  {
+    try {
       InputStreamReader inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
       in = new BufferedReader(inputStreamReader);
-
       String request = readRequestToString().toString();
 
       if (request.isEmpty()) {
-        continue;
+        return;
       }
 
       Request parsed = RequestUtils.parseRequest(request);
 
       sendMessage(parsed);
-
       clientSocket.close();
+    }catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
