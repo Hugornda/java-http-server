@@ -17,7 +17,6 @@ public class HttpServer {
 
   Router router = new Router();
   ServerSocket serverSocket;
-  Socket clientSocket;
   BufferedReader in;
 
   int port;
@@ -34,41 +33,36 @@ public class HttpServer {
     addShutdownHook();
 
     while (running) {
-      clientSocket = serverSocket.accept();
-      new Thread(this::handleClientRequest).start();
+      Socket clientSocket = serverSocket.accept();
+      new Thread(() -> handleClientRequest(clientSocket)).start();
     }
   }
 
-  private void handleClientRequest()  {
-    try {
-      InputStreamReader inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
-      in = new BufferedReader(inputStreamReader);
-      String request = readRequestToString().toString();
+  private void handleClientRequest(Socket clientSocket) {
+    try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+         OutputStream outputStream = clientSocket.getOutputStream()) {
+
+      String request = readRequestToString(in).toString();
 
       if (request.isEmpty()) {
+        clientSocket.close();
         return;
       }
 
       Request parsed = RequestUtils.parseRequest(request);
 
-      sendMessage(parsed);
+      Response response = router.handle(parsed);
+      outputStream.write(response.toString().getBytes());
+      outputStream.flush();
       clientSocket.close();
-    }catch (Exception e) {
+
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   public void registerRoute(String method, String path, Function<Request,Response> requestHandler){
     router.addRoute(new Route(method, path), requestHandler);
-  }
-
-
-  private void sendMessage(Request request) throws IOException {
-    Response response = router.handle(request);
-    OutputStream outputStream = clientSocket.getOutputStream();
-    outputStream.write(response.toString().getBytes());
-    outputStream.close();
-
   }
 
   private void registerDefaultErrorRoute() {
@@ -86,7 +80,7 @@ public class HttpServer {
     }));
   }
 
-  private StringBuilder readRequestToString() throws IOException {
+  private StringBuilder readRequestToString(BufferedReader in) throws IOException {
     String inputLine;
     StringBuilder request = new StringBuilder();
     while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
@@ -97,7 +91,6 @@ public class HttpServer {
 
   public void stop() throws IOException {
     in.close();
-    clientSocket.close();
     serverSocket.close();
   }
 }
