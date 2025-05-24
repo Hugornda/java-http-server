@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * HttpServer
@@ -39,13 +38,13 @@ public class HttpServer {
       InputStreamReader inputStreamReader = new InputStreamReader(clientSocket.getInputStream());
       in = new BufferedReader(inputStreamReader);
 
-      StringBuilder request = readRequestToString();
+      String request = readRequestToString().toString();
 
       if (request.isEmpty()) {
         continue;
       }
 
-      Request parsed = RequestUtils.parseRequest(request.toString());
+      Request parsed = RequestUtils.parseRequest(request);
 
       sendMessage(parsed);
 

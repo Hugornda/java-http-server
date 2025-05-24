@@ -10,6 +10,7 @@ public class Main {
     server.registerRoute("GET",
             "/echo/{str}",
             (request) -> new Response(200, "OK", request.getPathVariables().get("str")));
+    server.registerRoute("GET", "/user-agent", (request) -> new Response(200,"OK", request.getHeaders().get("User-Agent")));
 
     try {
       server.start();

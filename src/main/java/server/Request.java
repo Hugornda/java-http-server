@@ -10,9 +10,12 @@ public class Request {
 
   HashMap<String, String> pathVariables = new HashMap<>();
 
-  public Request(String method, String path) {
+  HashMap<String, String> headers;
+
+  public Request(String method, String path, HashMap<String, String> headers) {
     this.method = method;
     this.path = path;
+    this.headers = headers;
   }
 
   public String getMethod() {
@@ -21,6 +24,10 @@ public class Request {
 
   public String getPath() {
     return path;
+  }
+
+  public HashMap<String, String> getHeaders() {
+    return headers;
   }
 
   public void putPathVariable(String key, String val) {
