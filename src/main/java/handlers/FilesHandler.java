@@ -31,7 +31,7 @@ public class FilesHandler implements HandlerFunction {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to read file: " + fileName, e);
         }
-        Response response = new Response(200, "OK", content);
+        Response response = new Response(404, "Not Found", content);
 
         response.setContentType("application/octet-stream");
 
