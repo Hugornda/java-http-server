@@ -28,7 +28,6 @@ public class FilesHandler implements HandlerFunction {
 
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to read file: " + fileName, e);
-            return new Response(200, "");
         }
         Response response = new Response(200, "OK", content);
 
