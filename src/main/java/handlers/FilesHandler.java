@@ -22,6 +22,7 @@ public class FilesHandler implements HandlerFunction {
         String fileName = request.getPathVariables().get("fileName");
         String content = "";
         Path dir = Paths.get(resourcePath+ fileName);
+        logger.log(Level.INFO, "resource Path: " + resourcePath );
         logger.log(Level.INFO, "Checking if file exists: " + dir.toString());
 
         try {
