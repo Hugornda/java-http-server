@@ -23,8 +23,8 @@ public class Main {
     HashMap<String, Object> executionParameters = ServerConfigUtils.getRunArguments(args);
 
     String resourcePath = "";
-    if ( executionParameters.containsKey("resourcePath") ) {
-      resourcePath = (String) executionParameters.get("resourcePath");
+    if ( executionParameters.containsKey("directory") ) {
+      resourcePath = (String) executionParameters.get("directory");
     }
 
     HttpServer server = new HttpServer(4221 );
