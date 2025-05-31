@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class FilesHandler implements HandlerFunction {
 
-    private static Logger logger = Logger.getLogger(FilesHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(FilesHandler.class.getName());
     private final String resourcePath;
 
     public FilesHandler(String resourcePath) {
@@ -21,9 +21,7 @@ public class FilesHandler implements HandlerFunction {
     public Response apply(Request request) {
         String fileName = request.getPathVariables().get("fileName");
         String content = null;
-        Path dir = Paths.get(resourcePath+ fileName);
-        logger.log(Level.INFO, "resource Path: " + resourcePath );
-        logger.log(Level.INFO, "Checking if file exists: " + dir.toString());
+        Path dir = Paths.get(resourcePath + fileName);
 
         try {
             content = Files.readString(dir);

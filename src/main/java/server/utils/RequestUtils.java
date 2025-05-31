@@ -10,7 +10,8 @@ import java.util.HashMap;
 public final class RequestUtils {
 
   public static Request parseRequest(String request) {
-    String[] lines = request.split("\r\n");
+    String[] requestParts = request.split("\r\n\r\n", 2);
+    String[] lines = requestParts[0].split("\r\n");
     String[] requestInfo = lines[0].split(" ");
     HttpMethod method = HttpMethod.valueOf( requestInfo[0]);
     String path =  URLDecoder.decode(requestInfo[1], StandardCharsets.UTF_8) ;
@@ -22,9 +23,15 @@ public final class RequestUtils {
       if (split.length == 2) {
         headers.put(split[0], split[1]);
       }
+
     }
 
-    return new Request(method, path, headers);
+    String body = null;
+    if (requestParts.length > 1) {
+      body = requestParts[1];
+    }
+
+    return new Request(method, path, headers, body);
   }
 
 }

@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +54,7 @@ public class HttpServer {
     try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
          OutputStream outputStream = clientSocket.getOutputStream()) {
 
-      String request = readRequestToString(in).toString();
+      String request = readRequestToString(in);
 
       if (request.isEmpty()) {
         clientSocket.close();
@@ -91,13 +92,30 @@ public class HttpServer {
     }));
   }
 
-  private StringBuilder readRequestToString(BufferedReader in) throws IOException {
+  private String readRequestToString(BufferedReader in) throws IOException {
     String inputLine;
-    StringBuilder request = new StringBuilder();
+    StringBuilder headers = new StringBuilder();
     while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
-      request.append(inputLine).append("\r\n");
+      headers.append(inputLine).append("\r\n");
     }
-    return request;
+    //get Content type length
+    int contentLength = 0;
+    for (String header: headers.toString().split("\r\n")){
+      if ( header.toLowerCase(Locale.ROOT).contains("content-length:")){
+        contentLength = Integer.parseInt( header.split(":")[1].trim());
+      }
+    }
+
+    //read the next remaining bytes
+    char[] bodyBytes = new char[contentLength];
+    int read = in.read(bodyBytes);
+    String body = "";
+    if (read == contentLength){
+      body = new String(bodyBytes);
+    }
+
+
+    return headers +"\r\n" + body;
   }
 
   public void stop() throws IOException {

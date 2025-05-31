@@ -12,10 +12,13 @@ public class Request {
 
   HashMap<String, String> headers;
 
-  public Request(HttpMethod method, String path, HashMap<String, String> headers) {
+  String body;
+
+  public Request(HttpMethod method, String path, HashMap<String, String> headers, String body) {
     this.method = method;
     this.path = path;
     this.headers = headers;
+    this.body = body;
   }
 
   public HttpMethod getMethod() {
@@ -36,6 +39,10 @@ public class Request {
 
   public HashMap<String, String> getPathVariables() {
     return this.pathVariables;
+  }
+
+  public String getBody() {
+    return body;
   }
 
 }
