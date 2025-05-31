@@ -1,6 +1,14 @@
 package server;
 
-import utils.RequestUtils;
+import server.config.ServerConfiguration;
+import server.handlers.HandlerFunction;
+import server.handlers.NotFoundHandlerFunction;
+import server.model.HttpMethod;
+import server.model.Request;
+import server.model.Response;
+import server.router.Route;
+import server.router.Router;
+import server.utils.RequestUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,16 +16,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * HttpServer
  */
 public class HttpServer {
 
+  private static final Logger logger = Logger.getLogger(HttpServer.class.getName());
   Router router = new Router();
   ServerSocket serverSocket;
   BufferedReader in;
+
 
   int port;
   private volatile boolean running = true;
@@ -57,16 +68,16 @@ public class HttpServer {
       clientSocket.close();
 
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
   }
 
-  public void registerRoute(String method, String path, Function<Request,Response> requestHandler){
+  public void registerRoute(HttpMethod method, String path, HandlerFunction requestHandler){
     router.addRoute(new Route(method, path), requestHandler);
   }
 
   private void registerDefaultErrorRoute() {
-    this.router.registerRouteNotFound(( request )-> new Response(404, "Not Found"));
+    this.router.registerRouteNotFound( new NotFoundHandlerFunction());
   }
 
   private void addShutdownHook() {
@@ -75,7 +86,7 @@ public class HttpServer {
       try {
         serverSocket.close();
       }catch (IOException e){
-        e.printStackTrace();
+        logger.log(Level.SEVERE, e.getMessage(), e);
       }
     }));
   }

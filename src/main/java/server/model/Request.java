@@ -1,10 +1,10 @@
-package server;
+package server.model;
 
 import java.util.HashMap;
 
 public class Request {
 
-  private final String method;
+  private final HttpMethod method;
 
   private final String path;
 
@@ -12,13 +12,13 @@ public class Request {
 
   HashMap<String, String> headers;
 
-  public Request(String method, String path, HashMap<String, String> headers) {
+  public Request(HttpMethod method, String path, HashMap<String, String> headers) {
     this.method = method;
     this.path = path;
     this.headers = headers;
   }
 
-  public String getMethod() {
+  public HttpMethod getMethod() {
     return method;
   }
 

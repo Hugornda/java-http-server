@@ -1,18 +1,23 @@
-package server;
+package server.router;
+
+import server.handlers.HandlerFunction;
+import server.model.HttpMethod;
+import server.model.Request;
+import server.model.Response;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Function;
 
 public class Router {
-    private final HashMap<Route, Function<Request,Response>> routes;
+    private final HashMap<Route, Function<Request, Response>> routes;
     private Function<Request,Response> notFound;
 
     public Router() {
         routes = new HashMap<>();
     }
 
-    void addRoute(Route route, Function<Request,Response> requestHandler) {
+    public void addRoute(Route route, HandlerFunction requestHandler) {
         routes.put(route, requestHandler);
     }
 
@@ -32,7 +37,7 @@ public class Router {
     }
 
 
-    private Route getRouteAndSetPathVariables(String reqMethod, Request request) {
+    private Route getRouteAndSetPathVariables(HttpMethod reqMethod, Request request) {
         String[] reqPathElems = request.getPath().split("/");
 
         for (Route route : routes.keySet()) {
