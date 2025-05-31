@@ -21,7 +21,7 @@ public class Response {
     }
 
     public void setContentType(String contentType){
-        this.contentType = "\r\nContent-Type: " + contentType;
+        this.contentType =  contentType;
     }
 
     public String getContentType(){
@@ -37,7 +37,7 @@ public class Response {
             return "";
         }
 
-        return ("\r\nContent-Length: " + body.length() );
+        return "" + body.length();
     }
 
     @Override
@@ -45,8 +45,8 @@ public class Response {
         String responseBody = body == null? "" : ("\r\n\r\n" + body);
 
         return "HTTP/1.1 " + status + " " + message +
-                getContentType() +
-                getResponseContentLength() +
+                "\r\nContent-Type: " + getContentType() +
+                "\r\nContent-Length: " + getResponseContentLength() +
                 responseBody +
                 "\r\n\r\n";
     }
