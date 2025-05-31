@@ -22,6 +22,7 @@ public class Main {
     logger.log(Level.INFO, Arrays.toString(args));
     HashMap<String, Object> executionParameters = ServerConfigUtils.getRunArguments(args);
 
+    logger.log(Level.INFO, executionParameters.toString());
     String resourcePath = "";
     if ( executionParameters.containsKey("directory") ) {
       resourcePath = (String) executionParameters.get("directory");
