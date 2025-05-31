@@ -20,7 +20,7 @@ public class FilesHandler implements HandlerFunction {
     @Override
     public Response apply(Request request) {
         String fileName = request.getPathVariables().get("fileName");
-        String content = "";
+        String content = null;
         Path dir = Paths.get(resourcePath+ fileName);
         logger.log(Level.INFO, "resource Path: " + resourcePath );
         logger.log(Level.INFO, "Checking if file exists: " + dir.toString());
@@ -30,7 +30,7 @@ public class FilesHandler implements HandlerFunction {
 
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to read file: " + fileName, e);
-            return new Response(404, "Not Found ", content);
+            return new Response(404, "Not Found", content);
         }
         Response response = new Response(200, "OK", content);
 
