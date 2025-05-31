@@ -30,7 +30,7 @@ public class FilesHandler implements HandlerFunction {
 
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to read file: " + fileName, e);
-            return new Response(404, "Not Found", content);
+            return new Response(404, "Not Found ", content);
         }
         Response response = new Response(200, "OK", content);
 
