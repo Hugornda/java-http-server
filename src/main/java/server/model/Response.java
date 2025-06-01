@@ -66,7 +66,7 @@ public class Response {
         String responseBody = body == null? "" : ("\r\n\r\n" + body);
 
         return "HTTP/1.1 " + status + " " + message +
-                "\r\nContent-Encoding: " + getEncoding().toString().toLowerCase(Locale.ROOT) +
+                (getEncoding() ==null? "" : "\r\nContent-Encoding: " + getEncoding().toString().toLowerCase(Locale.ROOT) )+
                 "\r\nContent-Type: " + getContentType() +
                 "\r\nContent-Length: " + getResponseContentLength() +
                 responseBody +
