@@ -11,10 +11,7 @@ import server.router.Route;
 import server.router.Router;
 import server.utils.RequestUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Locale;
@@ -22,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * HttpServer
@@ -82,6 +80,12 @@ public class HttpServer {
 
       if (parsed.getHeaders().containsKey("Accept-Encoding") && parsed.getHeaders().get("Accept-Encoding").contains("gzip")) {
         response.setEncoding(ContentEncoding.GZIP);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(os);
+        byte[] bytes = response.getBody().getBytes();
+        gzipOutputStream.write(bytes);
+        gzipOutputStream.finish();
+        gzipOutputStream.close();
       }
 
       closeClientSocket(clientSocket, outputStream, response);
