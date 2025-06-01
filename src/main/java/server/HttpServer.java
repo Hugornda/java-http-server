@@ -92,7 +92,7 @@ public class HttpServer {
           sb.append((char) b);
         }
 
-        response.setBody(Arrays.toString(bytes));
+        response.setBody(sb.toString());
       }
 
       closeClientSocket(clientSocket, outputStream, response);
