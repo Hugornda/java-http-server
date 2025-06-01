@@ -89,7 +89,7 @@ public class HttpServer {
         gzipOutputStream.close();
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
-          sb.append((char) b);
+          sb.append( b);
         }
 
         response.setBody(sb.toString());
