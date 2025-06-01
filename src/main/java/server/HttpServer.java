@@ -80,7 +80,7 @@ public class HttpServer {
 
       Response response = router.handle(parsed);
 
-      if (parsed.getHeaders().containsKey("Accept-Encoding")) {
+      if (parsed.getHeaders().containsKey("Accept-Encoding") && parsed.getHeaders().get("Accept-Encoding").contains("gzip")) {
         response.setEncoding(ContentEncoding.GZIP);
       }
 
