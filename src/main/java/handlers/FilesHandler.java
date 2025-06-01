@@ -1,6 +1,7 @@
 package handlers;
 
 import server.handlers.HandlerFunction;
+import server.model.ContentType;
 import server.model.Request;
 import server.model.Response;
 
@@ -30,9 +31,10 @@ public class FilesHandler implements HandlerFunction {
             logger.log(Level.SEVERE, "Failed to read file: " + fileName, e);
             return new Response(404, "Not Found", content);
         }
+
         Response response = new Response(200, "OK", content);
 
-        response.setContentType("application/octet-stream");
+        response.setContentType(ContentType.OCTET_STREAM);
 
         return response;
     }

@@ -3,6 +3,7 @@ package server;
 import server.config.ServerConfiguration;
 import server.handlers.HandlerFunction;
 import server.handlers.NotFoundHandlerFunction;
+import server.model.ContentEncoding;
 import server.model.HttpMethod;
 import server.model.Request;
 import server.model.Response;
@@ -17,6 +18,8 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,13 +29,17 @@ import java.util.logging.Logger;
 public class HttpServer {
 
   private static final Logger logger = Logger.getLogger(HttpServer.class.getName());
-  Router router = new Router();
-  ServerSocket serverSocket;
-  BufferedReader in;
 
+  private final Router router = new Router();
 
-  int port;
+  private final ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
+  private final int port;
+
+  private ServerSocket serverSocket;
+
   private volatile boolean running = true;
+
 
   public HttpServer(int port) {
     this.port = port;
@@ -46,15 +53,23 @@ public class HttpServer {
 
     while (running) {
       Socket clientSocket = serverSocket.accept();
-      new Thread(() -> handleClientRequest(clientSocket)).start();
+      threadPool.submit(() -> handleClientRequest(clientSocket));
     }
+  }
+
+  public void stop() throws IOException {
+    serverSocket.close();
+  }
+
+  public void registerRoute(HttpMethod method, String path, HandlerFunction requestHandler){
+    router.addRoute(new Route(method, path), requestHandler);
   }
 
   private void handleClientRequest(Socket clientSocket) {
     try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
          OutputStream outputStream = clientSocket.getOutputStream()) {
 
-      String request = readRequestToString(in);
+      String request = RequestUtils.readRequestToString(in);
 
       if (request.isEmpty()) {
         clientSocket.close();
@@ -64,17 +79,22 @@ public class HttpServer {
       Request parsed = RequestUtils.parseRequest(request);
 
       Response response = router.handle(parsed);
-      outputStream.write(response.toString().getBytes());
-      outputStream.flush();
-      clientSocket.close();
+
+      if (parsed.getHeaders().containsKey("Accept-Encoding")) {
+        response.setEncoding(ContentEncoding.GZIP);
+      }
+
+      closeClientSocket(clientSocket, outputStream, response);
 
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage(), e);
     }
   }
 
-  public void registerRoute(HttpMethod method, String path, HandlerFunction requestHandler){
-    router.addRoute(new Route(method, path), requestHandler);
+  private static void closeClientSocket(Socket clientSocket, OutputStream outputStream, Response response) throws IOException {
+    outputStream.write(response.toString().getBytes());
+    outputStream.flush();
+    clientSocket.close();
   }
 
   private void registerDefaultErrorRoute() {
@@ -90,36 +110,5 @@ public class HttpServer {
         logger.log(Level.SEVERE, e.getMessage(), e);
       }
     }));
-  }
-
-  private String readRequestToString(BufferedReader in) throws IOException {
-    String inputLine;
-    StringBuilder headers = new StringBuilder();
-    while ((inputLine = in.readLine()) != null && !inputLine.isEmpty()) {
-      headers.append(inputLine).append("\r\n");
-    }
-    //get Content type length
-    int contentLength = 0;
-    for (String header: headers.toString().split("\r\n")){
-      if ( header.toLowerCase(Locale.ROOT).contains("content-length:")){
-        contentLength = Integer.parseInt( header.split(":")[1].trim());
-      }
-    }
-
-    //read the next remaining bytes
-    char[] bodyBytes = new char[contentLength];
-    int read = in.read(bodyBytes);
-    String body = "";
-    if (read == contentLength){
-      body = new String(bodyBytes);
-    }
-
-
-    return headers +"\r\n" + body;
-  }
-
-  public void stop() throws IOException {
-    in.close();
-    serverSocket.close();
   }
 }

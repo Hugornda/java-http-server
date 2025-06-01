@@ -1,5 +1,7 @@
 package server.model;
 
+import java.util.Locale;
+
 public class Response {
 
     int status;
@@ -8,7 +10,10 @@ public class Response {
 
     String body;
 
-    String contentType = "text/plain";
+    ContentType contentType = ContentType.TEXT_PLAIN;
+
+    ContentEncoding encoding;
+
 
     public Response(int status, String message){
         this.status = status;
@@ -20,24 +25,40 @@ public class Response {
         this.body = body;
     }
 
-    public void setContentType(String contentType){
+    public void setContentType(ContentType contentType){
         this.contentType =  contentType;
     }
 
-    public String getContentType(){
+    public ContentType getContentType(){
         if(contentType == null){
-            return "";
+            return ContentType.NO_CONTENT_TYPE;
         }
 
         return contentType;
     }
 
-    public String getResponseContentLength(){
+    public int getResponseContentLength(){
         if(body == null){
-            return "";
+            return 0;
         }
 
-        return "" + body.length();
+        return body.length();
+    }
+
+    public String getBody(){
+        return body;
+    }
+
+    public void setBody(String body){
+        this.body = body;
+    }
+
+    public void setEncoding(ContentEncoding encoding){
+        this.encoding = encoding;
+    }
+
+    public ContentEncoding getEncoding(){
+        return encoding;
     }
 
     @Override
@@ -45,6 +66,7 @@ public class Response {
         String responseBody = body == null? "" : ("\r\n\r\n" + body);
 
         return "HTTP/1.1 " + status + " " + message +
+                "\r\nContent-Encoding: " + getEncoding().toString().toLowerCase(Locale.ROOT) +
                 "\r\nContent-Type: " + getContentType() +
                 "\r\nContent-Length: " + getResponseContentLength() +
                 responseBody +
