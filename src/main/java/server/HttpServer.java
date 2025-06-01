@@ -14,6 +14,7 @@ import server.utils.RequestUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,6 +87,12 @@ public class HttpServer {
         gzipOutputStream.write(bytes);
         gzipOutputStream.finish();
         gzipOutputStream.close();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+          sb.append((char) b);
+        }
+
+        response.setBody(Arrays.toString(bytes));
       }
 
       closeClientSocket(clientSocket, outputStream, response);
