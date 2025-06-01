@@ -67,7 +67,7 @@ public class Response {
 
         return "HTTP/1.1 " + status + " " + message +
                 (getEncoding() ==null? "" : "\r\nContent-Encoding: " + getEncoding().toString().toLowerCase(Locale.ROOT) )+
-                "\r\nContent-Type: " + getContentType() +
+                "\r\nContent-Type: " + getContentType().asString() +
                 "\r\nContent-Length: " + getResponseContentLength() +
                 responseBody +
                 "\r\n\r\n";
